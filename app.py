@@ -2,11 +2,17 @@ import streamlit as st
 import pandas as pd
 import joblib
 
-# Load trained RandomForest model (updated file)
-model = joblib.load("fraud_detection_rf.pkl")  # <-- updated file
 
-# Best threshold (adjust if you have a new tuned threshold for this model)
-DEFAULT_THRESHOLD = 0.27  # keep as is or change if needed
+# --- Load model safely with caching ---
+@st.cache_data
+def load_model():
+    return joblib.load("fraud_detection_rf.pkl")
+
+
+model = load_model()  # cached model
+
+# Best threshold
+DEFAULT_THRESHOLD = 0.27  # adjust if needed
 
 # --- Title ---
 st.markdown(
@@ -74,7 +80,7 @@ threshold = st.slider(
     "Fraud Probability Threshold",
     0.0,
     1.0,
-    DEFAULT_THRESHOLD,  # uses current threshold
+    DEFAULT_THRESHOLD,
     0.01,
     key="threshold",
     label_visibility="visible",
